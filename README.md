@@ -1,1 +1,1 @@
-npm install && node --experimental-worker main.js
+npm install && node --experimental-worker ./1/{filename}
