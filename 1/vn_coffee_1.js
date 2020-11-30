@@ -20,7 +20,7 @@ const finish_coordinates = {
 
 const category = 2; /**mặc định là giáo dục */
 const threads = 4; /**Số lượng bình phương threads chạy - Thay đổi để tăng tốc crawl */
-const outputFile = `vn_education_1.csv`; /**Tên file xuất ra */
+const outputFile = `vn_coffee_1.csv`; /**Tên file xuất ra */
 const continuous = false; /**Tiếp tục */
 
 const d_lat = (finish_coordinates.lat - start_coordinates.lat) / threads;
