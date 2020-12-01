@@ -87,7 +87,7 @@ const finish_coordinates = {
 */
 const category = CATEGORY; /**mặc định là giáo dục */
 const threads = THREADS; /**Số lượng bình phương threads chạy - Thay đổi để tăng tốc crawl */
-const outputFile = "vn_" + BOX.toString() + "_1.csv"; /**Tên file xuất ra */
+const outputFile = "vn_" + (BOX+1).toString() + "_" + CATEGORY.toString() +".csv"; /**Tên file xuất ra */
 console.log("🚀 ~ file: main.js ~ line 91 ~ outputFile", outputFile);
 const continuous = false; /**Tiếp tục */
 
