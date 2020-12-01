@@ -6,22 +6,22 @@ const ObjectsToCsv = require("objects-to-csv");
 
 const getData = async (
   category = 12,
-  filename = "data.csv",
+  filename = "data.json",
   start_coordinates,
   finish_coordinates,
   continuous = false
 ) => {
   let times = 0;
 
-  start_coordinates = start_coordinates || {
-    lat: 10.7714,
-    long: 106.604236,
-  };
+  // start_coordinates = start_coordinates || {
+  //   lat: 10.7714,
+  //   long: 106.604236,
+  // };
 
-  finish_coordinates = finish_coordinates || {
-    lat: 10.823441,
-    long: 106.683367,
-  };
+  // finish_coordinates = finish_coordinates || {
+  //   lat: 10.823441,
+  //   long: 106.683367,
+  // };
 
   element_rectangle = [
     { ...start_coordinates },
