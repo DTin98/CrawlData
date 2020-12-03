@@ -3,8 +3,10 @@ const fs = require("fs");
 const _ = require("lodash");
 const { parentPort, workerData } = require("worker_threads");
 const ObjectsToCsv = require("objects-to-csv");
+const path = require("path");
 
 const getData = async (
+  threadIndex,
   category = 12,
   filename = "data.csv",
   start_coordinates,
@@ -13,15 +15,19 @@ const getData = async (
 ) => {
   let times = 0;
 
-  start_coordinates = start_coordinates || {
-    lat: 10.7714,
-    long: 106.604236,
-  };
+  if (continuous == true) {
+    log = JSON.parse(
+      await fs.readFileSync(
+        path.resolve(__dirname, filename + "_" + threadIndex + ".log")
+      )
+    );
 
-  finish_coordinates = finish_coordinates || {
-    lat: 10.823441,
-    long: 106.683367,
-  };
+    start_coordinates = log.log.start_coordinates;
+
+    finish_coordinates = log.log.finish_coordinates;
+
+    times = log.log.times;
+  }
 
   element_rectangle = [
     { ...start_coordinates },
@@ -83,6 +89,17 @@ const getData = async (
         //   )}% . ${JSON.stringify(rectangle_coordinates)}`
         // );
 
+        await fs.writeFileSync(
+          path.resolve(__dirname, filename + "_" + threadIndex + ".log"),
+          JSON.stringify({
+            log: {
+              start_coordinates: element_rectangle[0],
+              finish_coordinates: finish_coordinates,
+              times: times,
+            },
+          })
+        );
+
         times++;
       }
       lat_tmp = element_rectangle[0].lat;
@@ -98,6 +115,7 @@ const getData = async (
 };
 
 const {
+  threadIndex,
   category,
   start_coordinates,
   finish_coordinates,
@@ -106,6 +124,7 @@ const {
 } = workerData;
 // console.log("workerData", workerData);
 getData(
+  threadIndex,
   category,
   outputFile,
   start_coordinates,
