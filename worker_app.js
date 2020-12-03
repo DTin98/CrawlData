@@ -15,10 +15,16 @@ const getData = async (
 ) => {
   let times = 0;
 
-  if (continuous == true) {
+  if (
+    continuous == true &&
+    fs.existsSync("./log/" + filename + "_" + threadIndex + ".log")
+  ) {
     log = JSON.parse(
       await fs.readFileSync(
-        path.resolve(__dirname, filename + "_" + threadIndex + ".log")
+        path.resolve(
+          __dirname,
+          "./log/" + filename + "_" + threadIndex + ".log"
+        )
       )
     );
 
@@ -90,7 +96,10 @@ const getData = async (
         // );
 
         await fs.writeFileSync(
-          path.resolve(__dirname, filename + "_" + threadIndex + ".log"),
+          path.resolve(
+            __dirname,
+            "./log/" + filename + "_" + threadIndex + ".log"
+          ),
           JSON.stringify({
             log: {
               start_coordinates: element_rectangle[0],

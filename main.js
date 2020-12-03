@@ -19,6 +19,7 @@ require("events").EventEmitter.prototype._maxListeners = 100;
 const BOX = parseInt(process.argv.slice(2)[0]) - 1;
 const CATEGORY = parseInt(process.argv.slice(2)[1]);
 const THREADS = parseInt(process.argv.slice(2)[2]);
+const CONTINUOUS = parseInt(process.argv.slice(2)[3]);
 
 const start_frames = [
   [22.857907350423993, 104.64321020200927],
