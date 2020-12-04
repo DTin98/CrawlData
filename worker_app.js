@@ -1,19 +1,23 @@
 const axios = require("axios");
 const fs = require("fs");
-const _ = require("lodash");
-const { parentPort, workerData } = require("worker_threads");
 const ObjectsToCsv = require("objects-to-csv");
 const path = require("path");
+const { parse } = require("path");
 
 const getData = async (
   threadIndex,
   category = 12,
   filename = "data.csv",
-  start_coordinates,
-  finish_coordinates,
-  continuous = false
+  x1,
+  y1,
+  x2,
+  y2,
+  continuous
 ) => {
   let times = 0;
+
+  let start_coordinates = { lat: x1, long: y1 };
+  let finish_coordinates = { lat: x2, long: y2 };
 
   if (
     continuous == true &&
@@ -51,10 +55,6 @@ const getData = async (
     ((finish_coordinates.lat - element_rectangle[1].lat) / distance_lat);
   // console.log("total_times", total_times);
 
-  const filterData = (data) => {
-    return _.trim(JSON.stringify(data), "[]");
-  };
-
   try {
     //open file
 
@@ -85,16 +85,6 @@ const getData = async (
           rectangle_coordinates[1].long -
           long_tmp;
 
-        /*--log--*/
-        parentPort.postMessage(
-          parseFloat((times * 100) / total_times).toFixed(5)
-        );
-        // console.log(
-        //   `\t${parseFloat((times * 100) / total_times).toFixed(
-        //     5
-        //   )}% . ${JSON.stringify(rectangle_coordinates)}`
-        // );
-
         await fs.writeFileSync(
           path.resolve(
             __dirname,
@@ -105,11 +95,12 @@ const getData = async (
               start_coordinates: element_rectangle[0],
               finish_coordinates: finish_coordinates,
               times: times,
+              percent: (times * 100) / total_times,
             },
           })
         );
-
         times++;
+        console.log(`Thread ${threadIndex}: ${(times * 100) / total_times}`);
       }
       lat_tmp = element_rectangle[0].lat;
       element_rectangle[0].lat = element_rectangle[1].lat;
@@ -119,24 +110,27 @@ const getData = async (
 
     //close file
   } catch (error) {
-    console.error(error);
+    await fs.writeFileSync(
+      path.resolve(__dirname, "./log/" + filename + "_" + threadIndex + ".log"),
+      JSON.stringify({
+        log: {
+          start_coordinates: element_rectangle[0],
+          finish_coordinates: finish_coordinates,
+          times: times,
+          error: error,
+        },
+      })
+    );
   }
 };
 
-const {
-  threadIndex,
-  category,
-  start_coordinates,
-  finish_coordinates,
-  outputFile,
-  continuous,
-} = workerData;
-// console.log("workerData", workerData);
-getData(
-  threadIndex,
-  category,
-  outputFile,
-  start_coordinates,
-  finish_coordinates,
-  continuous
-);
+const threadIndex = parseInt(process.argv.slice(2)[0]);
+const category = parseInt(process.argv.slice(2)[1]);
+const outputFile = process.argv.slice(2)[2];
+const x1 = parseFloat(process.argv.slice(2)[3]);
+const y1 = parseFloat(process.argv.slice(2)[4]);
+const x2 = parseFloat(process.argv.slice(2)[5]);
+const y2 = parseFloat(process.argv.slice(2)[6]);
+const continuous = parseInt(process.argv.slice(2)[7]);
+
+getData(threadIndex, category, outputFile, x1, y1, x2, y2, continuous);

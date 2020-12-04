@@ -1,4 +1,4 @@
-npm install && node --experimental-worker main.js <BOX> <CATEGORY> <THREADS>
+npm install && node --experimental-worker main.js <BOX> <CATEGORY> <THREADS> <CONTINUOUS>
 
 vd: npm install && node --experimental-worker main.js 1 1 4
 (O vuong 1, cate: restaurent, 4^2 threads)

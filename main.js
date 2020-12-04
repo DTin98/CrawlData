@@ -1,5 +1,4 @@
-const { Worker } = require("worker_threads");
-const logUpdate = require("log-update");
+const { spawn } = require("child_process");
 require("events").EventEmitter.prototype._maxListeners = 100;
 // setMaxListeners(20);
 
@@ -109,25 +108,26 @@ let element_rectangle = [
   ],
 ];
 
+let child = [...Array(threads * 2)].fill(0);
+
 for (let i = 0; i < threads * threads; i++) {
   console.log({
     i: i,
     start_coordinates: element_rectangle[i][0],
     finish_coordinates: element_rectangle[i][1],
   });
-  const port = new Worker(require.resolve("./worker_app.js"), {
-    workerData: {
-      threadIndex: i,
-      category,
-      start_coordinates: element_rectangle[i][0],
-      finish_coordinates: element_rectangle[i][1],
-      outputFile,
-      continuous,
-    },
-  });
-  port.on("message", (data) => handleMessage(data, i));
-  port.on("error", (e) => console.log(e));
-  port.on("exit", (code) => console.log(`Exit code: ${code}`));
+
+  child[i] = spawn("node", [
+    `worker_app.js`,
+    `${i}`,
+    `${CATEGORY}`,
+    `vn_${i}_${CATEGORY}.csv`,
+    `${element_rectangle[i][0].lat}`,
+    `${element_rectangle[i][0].long}`,
+    `${element_rectangle[i][1].lat}`,
+    `${element_rectangle[i][1].long}`,
+    `1`,
+  ]);
 
   if ((i + 1) % threads !== 0) {
     if ((i + 2) % threads !== 0)
@@ -178,10 +178,12 @@ for (let i = 0; i < threads * threads; i++) {
   }
 }
 
-let percents = [...Array(threads * 2)].fill(0);
-function handleMessage(percent, index) {
-  percents[index] = percent;
-  logUpdate(
-    percents.map((status, i) => `Thread ${i + 1}: ${status} %`).join("\n")
-  );
+for (let i = 0; i < threads * threads; i++) {
+  child[i].stdout.on("data", (data) => {
+    console.log(`stdout:\n${data}`);
+  });
+
+  child[i].stderr.on("data", (data) => {
+    console.error(`stderr: ${data}`);
+  });
 }
