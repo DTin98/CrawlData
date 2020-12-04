@@ -10,8 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.20.0",
+    "gpu.js": "^2.10.5",
     "lodash": "^4.17.20",
     "log-update": "^4.0.0",
-    "objects-to-csv": "^1.3.6"
+    "objects-to-csv": "^1.3.6",
+    "require-rebuild": "^1.2.8"
   }
 }
