@@ -1,7 +1,13 @@
-npm install && node --experimental-worker main.js <BOX> <CATEGORY> <THREADS> <CONTINUOUS>
+#Hiển
 
-vd: npm install && node --experimental-worker main.js 1 1 4
-(O vuong 1, cate: restaurent, 4^2 threads)
+cmd1: npm i && node main.js 7 3 5
+cmd2: npm i && node main.js 7 4 5
+
+#Tú
+
+cmd1: npm i && node main.js 7 6 5
+cmd2: npm i && node main.js 7 7 5
+
 
 CATEGORY:
 /\*_
