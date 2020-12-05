@@ -1,4 +1,5 @@
 const { spawn } = require("child_process");
+const logUpdate = require("log-update");
 require("events").EventEmitter.prototype._maxListeners = 100;
 // setMaxListeners(20);
 
@@ -119,9 +120,9 @@ for (let i = 0; i < threads * threads; i++) {
 
   child[i] = spawn("node", [
     `worker_app.js`,
-    `${i}`,
+    `${i + 1}`,
     `${CATEGORY}`,
-    `vn_${i}_${CATEGORY}.csv`,
+    `${outputFile}`,
     `${element_rectangle[i][0].lat}`,
     `${element_rectangle[i][0].long}`,
     `${element_rectangle[i][1].lat}`,
@@ -178,9 +179,12 @@ for (let i = 0; i < threads * threads; i++) {
   }
 }
 
+let content = [...Array(threads * 2)].fill(0);
+
 for (let i = 0; i < threads * threads; i++) {
   child[i].stdout.on("data", (data) => {
-    console.log(`stdout:\n${data}`);
+    content[i] = data;
+    logUpdate(content);
   });
 
   child[i].stderr.on("data", (data) => {
