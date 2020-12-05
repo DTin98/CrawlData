@@ -1,11 +1,11 @@
 #Hiển
 
-cmd1: npm i && node main.js 7 3 5
+cmd1: npm i && node main.js 7 3 5<br/>
 cmd2: npm i && node main.js 7 4 5
 
 #Tú
 
-cmd1: npm i && node main.js 7 6 5
+cmd1: npm i && node main.js 7 6 5<br/>
 cmd2: npm i && node main.js 7 7 5
 
 
