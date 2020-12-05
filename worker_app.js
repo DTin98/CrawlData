@@ -2,6 +2,7 @@ const axios = require("axios");
 const fs = require("fs");
 const ObjectsToCsv = require("objects-to-csv");
 const path = require("path");
+const { exit } = require("process");
 
 const getData = async (
   threadIndex,
@@ -58,7 +59,6 @@ const getData = async (
 
   try {
     //open file
-
     while (
       element_rectangle[1].lat <
       finish_coordinates.lat + 0.001479973879312979
