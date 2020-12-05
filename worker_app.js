@@ -2,7 +2,6 @@ const axios = require("axios");
 const fs = require("fs");
 const ObjectsToCsv = require("objects-to-csv");
 const path = require("path");
-const { parse } = require("path");
 
 const getData = async (
   threadIndex,
@@ -39,11 +38,13 @@ const getData = async (
     times = log.log.times;
   }
 
+  //10.901578594970857, 106.72479284865365, 10.90435987955874, 106.73212064368234;
+
   element_rectangle = [
     { ...start_coordinates },
     {
-      lat: start_coordinates.lat + 0.001479973879312979, //lat zoom maximum
-      long: start_coordinates.long + 0.0036638975143432617, //long zoom maximum
+      lat: start_coordinates.lat + 10.90435987955874 - 10.901578594970857, //lat zoom maximum
+      long: start_coordinates.long + 106.73212064368234 - 106.72479284865365, //long zoom maximum
     },
   ];
 
@@ -76,31 +77,35 @@ const getData = async (
             const csv = new ObjectsToCsv(res.data.result.poi);
             await csv.toDisk(filename, { append: true });
           }
+
+          long_tmp = rectangle_coordinates[0].long;
+          rectangle_coordinates[0].long = rectangle_coordinates[1].long;
+          rectangle_coordinates[1].long =
+            rectangle_coordinates[1].long +
+            rectangle_coordinates[1].long -
+            long_tmp;
+
+          fs.writeFileSync(
+            path.resolve(
+              __dirname,
+              "./log/" + filename + "_" + threadIndex + ".log"
+            ),
+            JSON.stringify({
+              log: {
+                start_coordinates: element_rectangle[0],
+                finish_coordinates: finish_coordinates,
+                times: times,
+                percent: (times * 100) / total_times,
+              },
+            })
+          );
+          times++;
+          console.log(
+            `Thread ${threadIndex}: ${parseFloat(
+              (times * 100) / total_times
+            ).toFixed(2)}%`
+          );
         });
-
-        long_tmp = rectangle_coordinates[0].long;
-        rectangle_coordinates[0].long = rectangle_coordinates[1].long;
-        rectangle_coordinates[1].long =
-          rectangle_coordinates[1].long +
-          rectangle_coordinates[1].long -
-          long_tmp;
-
-        await fs.writeFileSync(
-          path.resolve(
-            __dirname,
-            "./log/" + filename + "_" + threadIndex + ".log"
-          ),
-          JSON.stringify({
-            log: {
-              start_coordinates: element_rectangle[0],
-              finish_coordinates: finish_coordinates,
-              times: times,
-              percent: (times * 100) / total_times,
-            },
-          })
-        );
-        times++;
-        console.log(`Thread ${threadIndex}: ${(times * 100) / total_times}`);
       }
       lat_tmp = element_rectangle[0].lat;
       element_rectangle[0].lat = element_rectangle[1].lat;
