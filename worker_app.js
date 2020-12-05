@@ -57,7 +57,7 @@ const getData = async (
 
   try {
     //open file
-
+    if (times >= total_times) process.exit;
     while (
       element_rectangle[1].lat <
       finish_coordinates.lat + 0.001479973879312979
