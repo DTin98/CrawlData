@@ -53,8 +53,8 @@ const getData = async (
   const distance_long = element_rectangle[1].long - element_rectangle[0].long;
   const distance_lat = element_rectangle[1].lat - element_rectangle[0].lat;
   const total_times =
-    ((finish_coordinates.long - element_rectangle[1].long) / distance_long) *
-    ((finish_coordinates.lat - element_rectangle[1].lat) / distance_lat);
+    ((finish_coordinates.long - y1) / distance_long) *
+    ((finish_coordinates.lat - x1) / distance_lat);
   // console.log("total_times", total_times);
 
   //open file
