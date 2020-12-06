@@ -58,34 +58,57 @@ const getData = async (
   // console.log("total_times", total_times);
 
   //open file
-  if (times >= total_times) process.exit;
-  while (
-    element_rectangle[1].lat <
-    finish_coordinates.lat + 0.001479973879312979
-  ) {
-    //Column
-    let rectangle_coordinates = JSON.parse(JSON.stringify(element_rectangle));
+  if (times < total_times) {
     while (
-      rectangle_coordinates[1].long <
-      finish_coordinates.long + 0.0036638975143432617
+      element_rectangle[1].lat <
+      finish_coordinates.lat + 0.001479973879312979
     ) {
-      //Row
-      let baseURL = `https://map.coccoc.com/map/search.json?category=${category}&borders=${rectangle_coordinates[0].lat},${rectangle_coordinates[0].long},${rectangle_coordinates[1].lat},${rectangle_coordinates[1].long}`;
-      try {
-        await axios.get(baseURL, { timeout: 300000 }).then(async (res) => {
-          // console.log("res", res.data);
-          if (res.data.result.poi.length > 0) {
-            const csv = new ObjectsToCsv(res.data.result.poi);
-            await csv.toDisk(filename, { append: true });
-          }
+      //Column
+      let rectangle_coordinates = JSON.parse(JSON.stringify(element_rectangle));
+      while (
+        rectangle_coordinates[1].long <
+        finish_coordinates.long + 0.0036638975143432617
+      ) {
+        //Row
+        let baseURL = `https://map.coccoc.com/map/search.json?category=${category}&borders=${rectangle_coordinates[0].lat},${rectangle_coordinates[0].long},${rectangle_coordinates[1].lat},${rectangle_coordinates[1].long}`;
+        try {
+          await axios.get(baseURL, { timeout: 300000 }).then(async (res) => {
+            // console.log("res", res.data);
+            if (res.data.result.poi.length > 0) {
+              const csv = new ObjectsToCsv(res.data.result.poi);
+              await csv.toDisk(filename, { append: true });
+            }
 
-          long_tmp = rectangle_coordinates[0].long;
-          rectangle_coordinates[0].long = rectangle_coordinates[1].long;
-          rectangle_coordinates[1].long =
-            rectangle_coordinates[1].long +
-            rectangle_coordinates[1].long -
-            long_tmp;
+            long_tmp = rectangle_coordinates[0].long;
+            rectangle_coordinates[0].long = rectangle_coordinates[1].long;
+            rectangle_coordinates[1].long =
+              rectangle_coordinates[1].long +
+              rectangle_coordinates[1].long -
+              long_tmp;
 
+            await fs.writeFileSync(
+              path.resolve(
+                __dirname,
+                "./log/" + filename + "_" + threadIndex + ".log"
+              ),
+              JSON.stringify({
+                log: {
+                  start_coordinates: element_rectangle[0],
+                  finish_coordinates: finish_coordinates,
+                  times: times,
+                  percent: (times * 100) / total_times,
+                },
+              })
+            );
+            times++;
+            console.log(
+              `Thread ${threadIndex}: ${parseFloat(
+                (times * 100) / total_times
+              ).toFixed(2)}%`
+            );
+          });
+        } catch (error) {
+          // console.log(error);
           await fs.writeFileSync(
             path.resolve(
               __dirname,
@@ -96,40 +119,18 @@ const getData = async (
                 start_coordinates: element_rectangle[0],
                 finish_coordinates: finish_coordinates,
                 times: times,
-                percent: (times * 100) / total_times,
+                error: error,
               },
             })
           );
-          times++;
-          console.log(
-            `Thread ${threadIndex}: ${parseFloat(
-              (times * 100) / total_times
-            ).toFixed(2)}%`
-          );
-        });
-      } catch (error) {
-        // console.log(error);
-        await fs.writeFileSync(
-          path.resolve(
-            __dirname,
-            "./log/" + filename + "_" + threadIndex + ".log"
-          ),
-          JSON.stringify({
-            log: {
-              start_coordinates: element_rectangle[0],
-              finish_coordinates: finish_coordinates,
-              times: times,
-              error: error,
-            },
-          })
-        );
+        }
       }
-    }
 
-    lat_tmp = element_rectangle[0].lat;
-    element_rectangle[0].lat = element_rectangle[1].lat;
-    element_rectangle[1].lat =
-      element_rectangle[1].lat + element_rectangle[1].lat - lat_tmp;
+      lat_tmp = element_rectangle[0].lat;
+      element_rectangle[0].lat = element_rectangle[1].lat;
+      element_rectangle[1].lat =
+        element_rectangle[1].lat + element_rectangle[1].lat - lat_tmp;
+    }
   }
 
   //close file
