@@ -119,6 +119,7 @@ const getData = async (
               start_coordinates: element_rectangle[0],
               finish_coordinates: finish_coordinates,
               times: times,
+              percent: (times * 100) / total_times,
               error: error,
             },
           })
