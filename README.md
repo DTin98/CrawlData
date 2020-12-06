@@ -1,7 +1,25 @@
-npm install && node --experimental-worker main.js <BOX> <CATEGORY> <THREADS>
+#Hiển
+##Step 1
 
-vd: npm install && node --experimental-worker main.js 1 1 4
-(O vuong 1, cate: restaurent, 4^2 threads)
+cmd1: npm i && node main.js 7 3 5<br/>
+cmd2: npm i && node main.js 7 4 5
+
+##Step 2
+
+cmd1: npm i && node main.js 6 1 5<br/>
+cmd2: npm i && node main.js 6 2 5
+
+#Tú
+##Step 1
+
+cmd1: npm i && node main.js 7 6 5<br/>
+cmd2: npm i && node main.js 7 7 5
+
+##Step 2
+
+cmd1: npm i && node main.js 7 11 5<br/>
+cmd2: npm i && node main.js 7 12 5
+
 
 CATEGORY:
 /\*_
